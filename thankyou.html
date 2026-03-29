@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thank You</title>
 <link rel="stylesheet" href="css/style.css">
+
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -15,18 +16,47 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
+
 fbq('init', '3821742341430033');
 fbq('track', 'PageView');
 </script>
-
-<!-- Custom Event AFTER Pixel is loaded -->
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=3821742341430033&ev=PageView&noscript=1"
 /></noscript>
+
+<!-- Fire Purchase Pixel using cart from localStorage -->
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  // Read cart items saved from addToCart
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+  if(cart.length > 0 && typeof fbq === 'function') {
+    const totalValue = cart.reduce((sum, item) => sum + item.price, 0);
+    const contents = cart.map(item => ({
+      id: item.name,
+      quantity: 1,
+      item_price: item.price
+    }));
+
+    // Fire Purchase event
+    fbq('track', 'Purchase', {
+      value: totalValue,
+      currency: 'MYR',
+      contents: contents,
+      content_type: 'product'
+    });
+
+    // Clear cart after purchase
+    localStorage.removeItem('cart');
+  }
+});
+</script>
+
 </head>
-  
+
 <body>
 <h1>Thank You for Your Purchase!</h1>
+<p>Your order has been confirmed.</p>
 <a href="index.html">Back to Home</a>
 </body>
 </html>
